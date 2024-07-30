@@ -10,7 +10,9 @@ app.use(express.json());
 dotenv.config();
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
-app.listen(3000, () => console.log("Server ready on port 3000."));
+app.get("/hello", (req, res) => res.send("Hello, World!"));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log("Server ready on port 3000."));
 
 //  curl -X POST -H "Content-Type: application/json" -d '{"image_url":"https://sample/image.jpg"}' http://localhost:3000/post
 app.post("/post", async (req: any, res: any) => {
