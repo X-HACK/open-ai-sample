@@ -17,16 +17,22 @@ app.listen(port, () => console.log("Server ready on port 3000."));
 // curl -X POST -H "Content-Type: application/json" -d '{"image_url":"https://sample/image.jpg"}' http://localhost:3000/post
 app.post("/post", async (req, res) => {
 	console.log({ body: req.body });
-	const content = await main(req.body.image_url);
+
+	let content = "";
+	if (req.body.text) {
+		content = await requestTextDescription(req.body.text);
+	} else if (!req.body.image_url.match(/^https?:\/\/.*\.(png|jpg|jpeg|gif)$/)) {
+		content = await requestImageDescription(req.body.image_url);
+	}
 
 	res.send(content);
 });
 
-async function main(image_url) {
+// 画像について質問する
+async function requestImageDescription(image_url) {
 	try {
 		// 初期化
 		const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 		const response = await openai.chat.completions.create({
 			model: "gpt-4o-2024-05-13",
 			max_tokens: 4096,
@@ -44,6 +50,34 @@ async function main(image_url) {
 							image_url: {
 								"url": image_url,
 							},
+						},
+					],
+				},
+			],
+		});
+		console.log({ content: response.choices[0]["message"]["content"] });
+		return response.choices[0]["message"]["content"];
+	} catch (error) {
+		console.error(error);
+		return error;
+	}
+}
+
+// 画像について質問する
+async function requestTextDescription(text) {
+	try {
+		// 初期化
+		const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+		const response = await openai.chat.completions.create({
+			model: "gpt-4o-2024-05-13",
+			max_tokens: 4096,
+			messages: [
+				{
+					role: "user",
+					content: [
+						{
+							type: "text",
+							text: text
 						},
 					],
 				},
