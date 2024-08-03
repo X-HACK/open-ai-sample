@@ -18,6 +18,12 @@ app.listen(port, () => console.log("Server ready on port 3000."));
 app.post("/post", async (req, res) => {
 	console.log({ body: req.body });
 
+	// parameter に text か image_url がない場合は 200 で返す
+	if (!req.body.text && !req.body.image_url) {
+		res.status(200).send("text または image_url を指定してください。");
+		return;
+	}
+
 	let content = "";
 	if (req.body.text) {
 		content = await requestTextDescription(req.body.text);
