@@ -14,15 +14,15 @@ app.get("/hello", (req, res) => res.send("Hello, World!"));
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log("Server ready on port 3000."));
 
-//  curl -X POST -H "Content-Type: application/json" -d '{"image_url":"https://sample/image.jpg"}' http://localhost:3000/post
-app.post("/post", async (req: any, res: any) => {
+// curl -X POST -H "Content-Type: application/json" -d '{"image_url":"https://sample/image.jpg"}' http://localhost:3000/post
+app.post("/post", async (req, res) => {
 	console.log({ body: req.body });
 	const content = await main(req.body.image_url);
 
 	res.send(content);
 });
 
-async function main(image_url: string) {
+async function main(image_url) {
 	try {
 		// 初期化
 		const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
